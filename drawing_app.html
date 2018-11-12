@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Drawing App</title>
+	<link rel="stylesheet" type="text/css" href="Drawing_app_stylesheet.css">
+</head>
+<body>
+	<div>
+		<button  id = "Line" onclick="currentEvent('Line')">	Line	</button>
+		<button  id = "Circle" onclick="currentEvent('Circle')">	Circle	</button>
+		<button  id = "Erase" onclick="currentEvent('Erase')">	Erase	</button>
+		<button  id = "Pencil" onclick="currentEvent('Pencil')">	Pencil	</button>
+	</div>
+	<canvas id="myCanvas" width="500" height="500" onmousedown="functionStarts(event)" onmousemove="functionMove(event)" onmouseup="functionEnds(event) "></canvas>
+	<script type="text/javascript">
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+
+		var mousedown = 0;
+
+		var start_point = {
+			X: 0,
+			Y: 0
+		};
+
+		var end_point = {
+			X: 0,
+			Y: 0
+		};
+
+		var one_state_back = ctx.getImageData(0,0,c.width,c.height);
+		var current_state = ctx.getImageData(0,0,c.width,c.height);
+
+		var task = " ";
+
+		function currentEvent(tsk)
+		{ 
+			task = tsk;
+			console.log(task);
+		}
+
+		function activationFunction(task,event,start_point,end_point)
+		{
+			if(task == "Line")
+			{
+				return drawLine(event,start_point,end_point);
+			}
+			else if(task == "Circle")
+			{
+				return drawCircle(event,start_point,end_point);
+			}
+			else if(task == "Erase")
+			{
+				return Eraser(event);
+			}
+			else
+			{
+				return handLine(event,start_point,end_point);
+			}
+
+		}
+
+
+
+		function drawLine(event,start_point,end_point)
+		{
+			end_point.X = event.clientX;
+			end_point.Y = event.clientY;		
+			ctx.beginPath();
+			ctx.moveTo(start_point.X,start_point.Y);
+			ctx.lineTo(end_point.X,end_point.Y);
+			ctx.stroke();
+			current_state = ctx.getImageData(0,0,c.width,c.height);
+		}
+
+		function drawCircle(event,start_point,end_point)
+		{
+			end_point.X = event.clientX;
+			end_point.Y = event.clientY;
+			ctx.beginPath();
+			ctx.arc(start_point.X,start_point.Y,Distance(start_point,end_point),0,2*Math.PI);
+			ctx.stroke();
+			current_state = ctx.getImageData(0,0,c.width,c.height);
+		}
+
+		function Eraser(event)
+		{	
+			ctx.clearRect(event.clientX,event.clientY,4,4);
+		}
+
+		function handLine(event,start_point,end_point)
+		{
+			start_point.X = end_point.X;
+			start_point.Y = end_point.Y;
+			end_point.X = event.clientX;
+			end_point.Y = event.clientY;
+			ctx.beginPath();
+			ctx.moveTo(start_point.X,start_point.Y);
+			ctx.lineTo(end_point.X,end_point.Y);
+			ctx.stroke();
+			current_state = ctx.getImageData(0,0,c.width,c.height);
+		}
+
+		function clearCanvas(){
+			current_state = one_state_back;
+			ctx.clearRect(0,0,500,500);
+			ctx.putImageData(current_state,0,0);	
+		}
+
+		function Distance(start_point,end_point)
+		{
+			var radius = Math.sqrt(Math.pow( start_point.X - end_point.X,2)+Math.pow( start_point.Y - end_point.Y ,2));
+			return radius;
+		}
+
+
+		function functionStarts(event)
+		{
+			one_state_back = ctx.getImageData(0,0,c.width,c.height);
+			start_point.X = event.clientX;
+			start_point.Y = event.clientY;
+			end_point.X = event.clientX;
+			end_point.Y = event.clientY;
+			mousedown = 1;
+			activationFunction(task,event,start_point,end_point)
+		}
+
+		function functionMove(event)
+		{	
+			if(mousedown ===1){
+				if(task =="Line" || task == "Circle")
+				{
+					clearCanvas();
+				}
+				activationFunction(task,event,start_point,end_point)
+				console.log(start_point,end_point);
+			}
+		}
+
+		function functionEnds(event)
+		{
+			mousedown = 0;
+			end_point.X = event.clientX;
+			end_point.Y = event.clientY;
+			activationFunction(task,event,start_point,end_point)
+		}
+
+
+	</script>
+
+</body>
+</html>
+
+
+
+
+<!-- 		function functionStarts(event)
+		{
+			var x = event.clientX;
+			var y = event.clientY;
+			ctx.moveTo(x,y);
+			ctx.lineTo(x,y);
+			ctx.stroke();
+			mousedown = 1;
+		}
+
+		function functionMove(event)
+		{
+			if(mousedown === 1)
+			{
+				var x = event.clientX;
+				var y = event.clientY;
+				ctx.lineTo(x,y);
+				ctx.stroke();
+			}
+
+		}
+
+		function functionEnds(event)
+		{
+			mousedown = 0;
+			var x = event.clientX;
+			var y = event.clientY;
+			ctx.lineTo(x,y);
+			ctx.stroke();
+
+		} -->
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.moveTo(0,0);
+ctx.lineTo(200,100);
+ctx.stroke();
+</script>
+
+</body>
+</html> -->
+<!-- 
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.beginPath();
+		ctx.arc(100,100,100,0,2*Math.PI);
+		ctx.moveTo(0,0);
+		ctx.lineTo(200,200);
+		ctx.stroke(); -->
